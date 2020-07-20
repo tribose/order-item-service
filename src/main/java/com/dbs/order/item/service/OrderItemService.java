@@ -1,8 +1,8 @@
 package com.dbs.order.item.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,19 +17,19 @@ public class OrderItemService {
 	@Autowired
 	OrderItemRepository orderItemRepository;
 	
-	public List<OrderItem> getAllOrderItems(){
+	public List<OrderItem> getAllOrderItems() throws OrderItemNotFoundException{
 		List<OrderItem> orderItemList = orderItemRepository.findAll();
 		
 		if(orderItemList.size() > 0) {
 			return orderItemList;
 		}else {
-			return new ArrayList<OrderItem>();
+			throw new OrderItemNotFoundException("Order Items aren't available. Please create Order Item");
 		}	
 	}
 	
 	public OrderItem getOrderById(Long id) throws OrderItemNotFoundException {
 		
-		Optional<OrderItem> order = orderItemRepository.findById(id);
+		Optional<OrderItem> order = orderItemRepository.findByProductCode(id);
 		if(order.isPresent()) {
 			return order.get();
 		}else {
@@ -43,24 +43,24 @@ public class OrderItemService {
 		if(orderItem.isPresent()) {
 			return orderItem.get();
 		}else {
-			throw new OrderItemNotFoundException("Order Item Not Found. Please try something else");
+			throw new OrderItemNotFoundException("Order Item Not Found. Please try something else or create new order item");
 		}
 	}
 	
-	public OrderItem createOrUpdateOrder(OrderItem orderItem) {
+	public OrderItem createOrUpdateOrderItem(OrderItem orderItem) {
 		
-		Optional<OrderItem> item = orderItemRepository.findById(orderItem.getId());
+		Optional<OrderItem> item = orderItemRepository.findByProductName(orderItem.getProductName());
 		if(item.isPresent()) {
 			OrderItem newOrderItem = item.get();
-			newOrderItem.setProductCode(orderItem.getProductCode());
-			newOrderItem.setProductName(orderItem.getProductName());
 			newOrderItem.setQuantity(orderItem.getQuantity());
-			
 			newOrderItem = orderItemRepository.save(newOrderItem);
+			
 			return newOrderItem;
 		}else {
+			orderItem.setProductCode(ThreadLocalRandom.current().nextLong(3030000, 3090000));
 			orderItem = orderItemRepository.save(orderItem);
+			
 			return orderItem;
-		}
+		}		
 	}
 }

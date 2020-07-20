@@ -29,7 +29,7 @@ public class OrderItemServiceController {
 	OrderItemService orderItemService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON)
-	public List<OrderItem> getAllOrderItems(){
+	public List<OrderItem> getAllOrderItems() throws OrderItemNotFoundException{
 		
 		return orderItemService.getAllOrderItems();
 	}
@@ -49,7 +49,7 @@ public class OrderItemServiceController {
 	@PostMapping
 	public OrderItem createOrUpdateOrder(@Valid @RequestBody OrderItem orderItem) {
 		System.out.println("orderItem.toString() :"+orderItem.toString());
-		OrderItem orderItemResponse = orderItemService.createOrUpdateOrder(orderItem);
+		OrderItem orderItemResponse = orderItemService.createOrUpdateOrderItem(orderItem);
 		return orderItemResponse;
-	}
+	} 
 }

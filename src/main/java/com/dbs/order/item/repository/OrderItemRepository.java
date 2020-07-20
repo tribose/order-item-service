@@ -11,4 +11,6 @@ import com.dbs.order.item.model.OrderItem;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long>{
 	
 	public Optional<OrderItem> findByProductName(String product_name);
+	
+	public Optional<OrderItem> findByProductCode(Long productCode);
 }
